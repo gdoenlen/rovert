@@ -34,7 +34,7 @@ public class EventHandlerFactory {
         return handler;
     }
 
-    public class NoHandlerFoundException extends RuntimeException {
+    public static class NoHandlerFoundException extends RuntimeException {
         private static final long serialVersionUID = 3905558720764253870L;
 
         public NoHandlerFoundException(String message) {
