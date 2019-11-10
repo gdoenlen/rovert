@@ -7,6 +7,12 @@ import javax.ws.rs.ext.Provider;
 
 import com.github.gdoenlen.rovert.EventHandlerFactory.NoHandlerFoundException;
 
+/**
+ * Exception mapper to handle exceptions thrown from `EventHandlerFactory`
+ * when a handler isn't found for a requested type. 
+ * 
+ * Always returns bad request.
+ */
 @Provider
 public class NoHandlerFoundExceptionMapper implements ExceptionMapper<EventHandlerFactory.NoHandlerFoundException> {
 
