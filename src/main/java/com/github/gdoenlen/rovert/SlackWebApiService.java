@@ -90,7 +90,7 @@ public class SlackWebApiService {
         });
     }
 
-    public class Response {
+    public static class Response {
         @JsonProperty
         private boolean ok;
 
