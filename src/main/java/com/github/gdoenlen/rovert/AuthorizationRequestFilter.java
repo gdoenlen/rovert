@@ -83,7 +83,7 @@ public class AuthorizationRequestFilter implements ContainerRequestFilter {
 
         var body = IOUtils.toString(requestContext.getEntityStream(), Charset.defaultCharset());    
         var joined = String.join(":", VERSION, timestamp, body);
-        if (!signature.equals("v0" + this.mac.doFinal(joined.getBytes()))) {
+        if (!signature.equals(VERSION + "=" + this.mac.doFinal(joined.getBytes()))) {
             requestContext.abortWith(UNAUTHORIZED);
         }
     }
