@@ -42,7 +42,7 @@ public class EventsController {
 
         String type = event.getType();
         if ("event_callback".equals(type)) {
-            type = event.getEvent().get("type").asText();
+            type = event.getEvent().getType();
         }
 
         return handlers.get(event.getType()).handle(event);

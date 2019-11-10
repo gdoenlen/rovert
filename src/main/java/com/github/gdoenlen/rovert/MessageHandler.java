@@ -9,7 +9,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.github.gdoenlen.rovert.Event.SubEvent;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -74,10 +74,10 @@ public class MessageHandler implements EventHandler {
     public Response handle(Event event) {
         Objects.requireNonNull(event);
 
-        JsonNode inner = event.getEvent();
-        String timestamp = inner.get("event_ts").asText();
-        String user = inner.get("user").asText();
-        String channel = inner.get("channel").asText();
+        SubEvent inner = event.getEvent();
+        String timestamp = inner.getEventTimestamp();
+        String user = inner.getUser();
+        String channel = inner.getChannel();
         
         if (userId.equals(user) && sendMessage.compareAndSet(true, false)) {
             this.slack.addReaction(channel, this.react, timestamp);

@@ -3,7 +3,6 @@ package com.github.gdoenlen.rovert;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * Model that represents the standard event wrapper from slack
@@ -19,7 +18,7 @@ public class Event {
     private String challenge;
 
     @JsonProperty
-    private JsonNode event;
+    private SubEvent event;
 
     @JsonProperty("event_id")
     private String eventId;
@@ -60,11 +59,11 @@ public class Event {
         this.challenge = challenge;
     }
 
-    public JsonNode getEvent() {
+    public SubEvent getEvent() {
         return event;
     }
 
-    public void setEvent(JsonNode event) {
+    public void setEvent(SubEvent event) {
         this.event = event;
     }
 
@@ -106,5 +105,51 @@ public class Event {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public static class SubEvent {
+        @JsonProperty
+        private String type;
+
+        @JsonProperty("event_ts")
+        private String eventTimestamp;
+
+        @JsonProperty
+        private String user;
+
+        @JsonProperty
+        private String channel;
+
+        public String getType() {
+            return this.type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+
+        public String getEventTimestamp() {
+            return this.eventTimestamp;
+        }
+
+        public void setEventTimestamp(String eventTimestamp) {
+            this.eventTimestamp = eventTimestamp;
+        }
+
+        public String getUser() {
+            return this.user;
+        }
+
+        public void setUser(String user) {
+            this.user = user;
+        }
+
+        public String getChannel() {
+            return this.channel;
+        }
+
+        public void setChannel(String channel) {
+            this.channel = channel;
+        }
     }
 }
