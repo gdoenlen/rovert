@@ -19,7 +19,7 @@ public class UrlVerificationHandler implements EventHandler {
     public Response handle(Event event) {
         Objects.requireNonNull(event);
 
-        return Response.ok(event.getChallenge()).header("Content-type", MediaType.TEXT_PLAIN).build();
+        return Response.ok(event.getChallenge()).header(Headers.CONTENT_TYPE, MediaType.TEXT_PLAIN).build();
     }
 
     @Override
