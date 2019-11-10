@@ -1,6 +1,6 @@
 package com.github.gdoenlen.rovert;
 
-import java.io.IOException;
+import java.io.UncheckedIOException;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.core.Response;
@@ -8,10 +8,10 @@ import javax.ws.rs.ext.ExceptionMapper;
 
 /** Handler for UncheckedIOExceptions */
 @ApplicationScoped
-public class UncheckedIOExceptionMapper implements ExceptionMapper<IOException> {
+public class UncheckedIOExceptionMapper implements ExceptionMapper<UncheckedIOException> {
 
     @Override
-    public Response toResponse(IOException exception) {
+    public Response toResponse(UncheckedIOException exception) {
         return Response.serverError().build();
     }
 }
