@@ -3,7 +3,6 @@ package com.github.gdoenlen.rovert;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -22,7 +21,7 @@ class MessageHandlerTest {
         try {
             var slack = Mockito.mock(SlackWebApiService.class);
             var scheduler = Mockito.mock(ScheduledExecutorService.class);
-            var handler = new MessageHandler(slack, scheduler, "", "", 0);
+            new MessageHandler(slack, scheduler, "", "", 0);
         } catch (IllegalArgumentException ex) {
             assertTrue(true);
             return;
@@ -70,7 +69,7 @@ class MessageHandlerTest {
         var delay = 1L;
         var handler = new MessageHandler(slack, scheduler, "", user, delay);
 
-        Response response = handler.handle(event);
+        handler.handle(event);
 
         verify(slack).addReaction(channel, "", timestamp);
     }
@@ -93,7 +92,7 @@ class MessageHandlerTest {
         var delay = 1L;
         var handler = new MessageHandler(slack, scheduler, "", "bob", delay);
 
-        Response response = handler.handle(event);
+        handler.handle(event);
 
         verify(slack, never()).addReaction(channel, "", timestamp);
     }
