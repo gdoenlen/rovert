@@ -1,9 +1,12 @@
 package com.github.gdoenlen.rovert;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.Objects;
 
 import javax.crypto.Mac;
@@ -36,10 +39,14 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @ApplicationScoped
 public class AuthorizationRequestFilter implements ContainerRequestFilter {
 
+    public static final String SLACK_HEADER_REQUEST_TIMESTAMP = "X-Slack-Request-Timestamp";
+    public static final String SLACK_HEADER_SIGNATURE = "X-Slack-Signature";
+    public static final String SIGNING_ALGORITHM = "HmacSHA256";
+
     /** Version of the slack api. Currently the version is always 0. */
-    private static final String VERSION = "v0";
+    public static final String SLACK_API_VERSION = "v0";
+
     private static final Response UNAUTHORIZED = Response.status(Status.UNAUTHORIZED).build();
-    private static final String SIGNING_ALGORITHM = "HmacSHA256";
 
     /** Determines if this filter is enabled */
     private final boolean enabled;
@@ -75,15 +82,18 @@ public class AuthorizationRequestFilter implements ContainerRequestFilter {
             return;
         }
 
-        var timestamp = requestContext.getHeaderString("X-Slack-Request-Timestamp");
-        var signature = requestContext.getHeaderString("X-Slack-Signature");
+        var timestamp = requestContext.getHeaderString(SLACK_HEADER_REQUEST_TIMESTAMP);
+        var signature = requestContext.getHeaderString(SLACK_HEADER_SIGNATURE);
         if (timestamp == null || signature == null) {
             requestContext.abortWith(UNAUTHORIZED);
+            return;
         }
 
         var body = IOUtils.toString(requestContext.getEntityStream(), Charset.defaultCharset());    
-        var joined = String.join(":", VERSION, timestamp, body);
-        if (!signature.equals(VERSION + "=" + this.mac.doFinal(joined.getBytes()))) {
+        var joined = String.join(":", SLACK_API_VERSION, timestamp, body);
+        var hash = Base64.getEncoder().encodeToString(mac.doFinal(joined.getBytes()));
+        
+        if (!signature.equals(SLACK_API_VERSION + "=" + hash)) {
             requestContext.abortWith(UNAUTHORIZED);
         }
     }
