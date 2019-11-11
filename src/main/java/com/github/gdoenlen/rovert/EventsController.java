@@ -45,6 +45,6 @@ public class EventsController {
             type = event.getEvent().getType();
         }
 
-        return handlers.get(event.getType()).handle(event);
+        return handlers.get(type).handle(event);
     }
 }
