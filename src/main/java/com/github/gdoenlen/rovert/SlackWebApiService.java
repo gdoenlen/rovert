@@ -31,6 +31,8 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @ApplicationScoped
 public class SlackWebApiService {
 
+    static final String ADD_REACTION_FORMAT_STRING = "/reaction.add?channel=%s&name=%s&timestamp=%s&token=%s";
+
     private final HttpClient client;
     private final String url;
     private final ObjectMapper mapper;
@@ -71,7 +73,7 @@ public class SlackWebApiService {
     public Future<Response> addReaction(String channel, String name, String timestamp) {
         var request = HttpRequest.newBuilder()
             .uri(URI.create(String.format(
-                this.url + "/reaction.add?channel=%s&name=%s&timestamp=%s&token=%s",
+                this.url + ADD_REACTION_FORMAT_STRING,
                 channel,
                 name,
                 timestamp,
