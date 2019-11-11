@@ -1,6 +1,7 @@
 package com.github.gdoenlen.rovert;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import com.github.gdoenlen.rovert.EventHandlerFactory.NoHandlerFoundException;
 
@@ -24,6 +25,6 @@ class EventHandlerFactoryTest {
             assertTrue(true);
             return;
         }
-        assertTrue(false);
+        fail();
     }
 }
