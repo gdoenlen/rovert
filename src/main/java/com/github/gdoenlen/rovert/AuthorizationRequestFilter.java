@@ -2,13 +2,9 @@ package com.github.gdoenlen.rovert;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 import java.util.Objects;
 
 import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -16,6 +12,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.HmacAlgorithms;
+import org.apache.commons.codec.digest.HmacUtils;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -39,7 +38,6 @@ public class AuthorizationRequestFilter implements ContainerRequestFilter {
 
     public static final String SLACK_HEADER_REQUEST_TIMESTAMP = "X-Slack-Request-Timestamp";
     public static final String SLACK_HEADER_SIGNATURE = "X-Slack-Signature";
-    public static final String SIGNING_ALGORITHM = "HmacSHA256";
 
     /** Version of the slack api. Currently the version is always 0. */
     public static final String SLACK_API_VERSION = "v0";
@@ -65,13 +63,7 @@ public class AuthorizationRequestFilter implements ContainerRequestFilter {
         Objects.requireNonNull(secret);
         
         this.enabled = enabled;
-        try {
-            this.mac = Mac.getInstance(SIGNING_ALGORITHM);
-            var secretKey = new SecretKeySpec(secret.getBytes(), SIGNING_ALGORITHM);
-            this.mac.init(secretKey);
-        } catch (NoSuchAlgorithmException | InvalidKeyException ex) {
-            throw new RuntimeException(ex);
-        }
+        this.mac = HmacUtils.getInitializedMac(HmacAlgorithms.HMAC_SHA_256, secret.getBytes());
     }
     
     @Override
@@ -89,7 +81,7 @@ public class AuthorizationRequestFilter implements ContainerRequestFilter {
 
         var body = IOUtils.toString(requestContext.getEntityStream(), Charset.defaultCharset());    
         var joined = String.join(":", SLACK_API_VERSION, timestamp, body);
-        var hash = Base64.getEncoder().encodeToString(mac.doFinal(joined.getBytes()));
+        var hash = Hex.encodeHexString(mac.doFinal(joined.getBytes()));
         
         if (!signature.equals(SLACK_API_VERSION + "=" + hash)) {
             requestContext.abortWith(UNAUTHORIZED);
