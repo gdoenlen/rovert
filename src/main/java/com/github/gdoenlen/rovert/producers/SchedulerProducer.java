@@ -3,6 +3,7 @@ package com.github.gdoenlen.rovert.producers;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 
 /**
@@ -11,6 +12,7 @@ import javax.enterprise.inject.Produces;
 class SchedulerProducer {
 
     @Produces
+    @ApplicationScoped
     ScheduledExecutorService produceScheduledExecutorService() {
         return Executors.newScheduledThreadPool(1);   
     }
