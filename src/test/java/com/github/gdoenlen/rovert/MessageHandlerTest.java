@@ -1,8 +1,6 @@
 package com.github.gdoenlen.rovert;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -15,20 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 class MessageHandlerTest {
-
-    @Test
-    void it_should_throw_illegal_argument_exception_if_delay_is_less_than_zero() {
-        try {
-            var slack = Mockito.mock(SlackWebApiService.class);
-            var scheduler = Mockito.mock(ScheduledExecutorService.class);
-            new MessageHandler(slack, scheduler, "", "", 0);
-        } catch (IllegalArgumentException ex) {
-            assertTrue(true);
-            return;
-        }
-
-        fail();
-    }
 
     @Test
     void it_should_return_no_content() {

@@ -47,10 +47,6 @@ public class MessageHandler implements EventHandler {
         Objects.requireNonNull(react);
         Objects.requireNonNull(userId);
 
-        if (delay <= 0) {
-            throw new IllegalArgumentException("Delay must be greater than 0.");
-        }
-
         this.slack = slack;
         this.scheduler = scheduler;
         this.react = react;
@@ -81,7 +77,12 @@ public class MessageHandler implements EventHandler {
         
         if (userId.equals(user) && sendMessage.compareAndSet(true, false)) {
             this.slack.addReaction(channel, this.react, timestamp);
-            this.scheduler.schedule(() -> sendMessage.set(true), this.delay, TimeUnit.MINUTES);
+
+            if (this.delay > 0) {
+                this.scheduler.schedule(() -> sendMessage.set(true), this.delay, TimeUnit.MINUTES);
+            } else {
+                sendMessage.set(true);
+            }
         }
         
         return Response.noContent().build();
