@@ -15,9 +15,8 @@ public class EventHandlerFactory {
     private final Map<String, EventHandler> handlers = new HashMap<String, EventHandler>();
 
     @Inject
-    public EventHandlerFactory(UrlVerificationHandler urlVerificationHandler, MessageHandler messageHandler) {
+    public EventHandlerFactory(UrlVerificationHandler urlVerificationHandler) {
         this.handlers.put(urlVerificationHandler.getEventType(), urlVerificationHandler);
-        this.handlers.put(messageHandler.getEventType(), messageHandler);
     }
 
     /**

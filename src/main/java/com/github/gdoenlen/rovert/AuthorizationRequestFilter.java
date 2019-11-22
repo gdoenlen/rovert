@@ -72,16 +72,16 @@ public class AuthorizationRequestFilter implements ContainerRequestFilter {
             return;
         }
 
-        var timestamp = requestContext.getHeaderString(SLACK_HEADER_REQUEST_TIMESTAMP);
-        var signature = requestContext.getHeaderString(SLACK_HEADER_SIGNATURE);
+        String timestamp = requestContext.getHeaderString(SLACK_HEADER_REQUEST_TIMESTAMP);
+        String signature = requestContext.getHeaderString(SLACK_HEADER_SIGNATURE);
         if (timestamp == null || signature == null) {
             requestContext.abortWith(UNAUTHORIZED);
             return;
         }
 
-        var body = IOUtils.toString(requestContext.getEntityStream(), Charset.defaultCharset());    
-        var joined = String.join(":", SLACK_API_VERSION, timestamp, body);
-        var hash = Hex.encodeHexString(mac.doFinal(joined.getBytes()));
+        String body = IOUtils.toString(requestContext.getEntityStream(), Charset.defaultCharset());    
+        String joined = String.join(":", SLACK_API_VERSION, timestamp, body);
+        String hash = Hex.encodeHexString(mac.doFinal(joined.getBytes()));
         
         if (!signature.equals(SLACK_API_VERSION + "=" + hash)) {
             requestContext.abortWith(UNAUTHORIZED);
