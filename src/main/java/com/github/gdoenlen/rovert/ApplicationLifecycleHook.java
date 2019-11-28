@@ -25,6 +25,6 @@ public class ApplicationLifecycleHook {
     }
     
     public void onStop(@Observes ShutdownEvent ev) {
-        this.scheduler.shutdownNow();
+        this.scheduler.shutdown();
     }        
 }
