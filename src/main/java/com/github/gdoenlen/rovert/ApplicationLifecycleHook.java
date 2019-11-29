@@ -25,6 +25,11 @@ public class ApplicationLifecycleHook {
     }
     
     public void onStop(@Observes ShutdownEvent ev) {
-        this.scheduler.shutdown();
+        // The scheduler is currently only used for setting
+        // the guard to the delay mechanism in MessageHandler.java.
+        // shutDownNow is appropriate because we don't care
+        // if that guard gets reset after the cooldown because the
+        // application won't be receiving any more requests.
+        this.scheduler.shutdownNow();
     }        
 }
