@@ -14,8 +14,6 @@ import java.util.concurrent.CompletableFuture;
 
 import javax.ws.rs.core.MediaType;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -45,8 +43,8 @@ class SlackWebApiServiceTest {
         HttpResponse<Object> response = Mockito.mock(HttpResponse.class);
         when(client.sendAsync(any(), any())).thenReturn(CompletableFuture.completedFuture(response));
 
-        var service = new SlackWebApiService(client, url, Mockito.mock(ObjectMapper.class), token);
+        var service = new SlackWebApiService(client, url, token);
         service.addReaction(channel, name, timestamp);
-        verify(client).sendAsync(request, BodyHandlers.ofString());
+        verify(client).sendAsync(request, BodyHandlers.discarding());
     }
 }

@@ -1,21 +1,17 @@
 package com.github.gdoenlen.rovert;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.util.Objects;
-import java.util.concurrent.Future;
+import java.util.concurrent.CompletableFuture;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -35,7 +31,6 @@ public class SlackWebApiService {
 
     private final HttpClient client;
     private final String url;
-    private final ObjectMapper mapper;
     private final String token;
 
     /**
@@ -48,29 +43,34 @@ public class SlackWebApiService {
     public SlackWebApiService(
         HttpClient client,
         @ConfigProperty(name = "slack.api.url") String url,
-        ObjectMapper mapper,
         @ConfigProperty(name = "slack.api.token") String token
     ) {
         Objects.requireNonNull(client);
         Objects.requireNonNull(url);
-        Objects.requireNonNull(mapper);
         Objects.requireNonNull(token);
 
         this.client = client;
         this.url = url;
-        this.mapper = mapper;
         this.token = token;
     }
     
     /**
-     * Asynchronously adds a reaciont to a message in a specific channel
+     * Asynchronously adds a reaction to a message in a specific channel
      * 
      * @param channel The channel the message was in
      * @param name the name of the reaction to apply
      * @param timestamp the timestamp of when the message occured
      * @return The response from the api whenever it returns.
      */
-    public Future<Response> addReaction(String channel, String name, String timestamp) {
+    public CompletableFuture<HttpResponse<Void>> addReaction(
+        String channel,
+        String name,
+        String timestamp
+    ) {
+        Objects.requireNonNull(channel);
+        Objects.requireNonNull(name);
+        Objects.requireNonNull(timestamp);
+
         var request = HttpRequest.newBuilder()
             .uri(URI.create(String.format(
                 this.url + ADD_REACTION_FORMAT_STRING,
@@ -83,36 +83,6 @@ public class SlackWebApiService {
             .POST(BodyPublishers.noBody())
             .build();
         
-        return this.client.sendAsync(request, BodyHandlers.ofString()).thenApply(response -> {
-            try {
-                return this.mapper.readValue(response.body(), Response.class);
-            } catch (IOException ex) {
-                throw new UncheckedIOException(ex);
-            }
-        });
-    }
-
-    public static class Response {
-        @JsonProperty
-        private boolean ok;
-
-        @JsonProperty
-        private String error;
-
-        public boolean isOk() {
-            return this.ok;
-        }
-
-        public void setOk(boolean ok) {
-            this.ok = ok;
-        }
-
-        public String getError() {
-            return this.error;
-        }
-
-        public void setError(String error) {
-            this.error = error;
-        }
+        return this.client.sendAsync(request, BodyHandlers.discarding());
     }
 }
