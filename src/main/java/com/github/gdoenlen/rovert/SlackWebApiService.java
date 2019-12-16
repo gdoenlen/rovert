@@ -28,6 +28,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 public class SlackWebApiService {
 
     static final String ADD_REACTION_FORMAT_STRING = "/reaction.add?channel=%s&name=%s&timestamp=%s&token=%s";
+    static final String POST_MESSAGE_FORMAT_STRING = "/chat.postMessage?channel=%s&text=%s&token=%s";
 
     private final HttpClient client;
     private final String url;
@@ -78,6 +79,31 @@ public class SlackWebApiService {
                 name,
                 timestamp,
                 this.token
+            )))
+            .header(Headers.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED)
+            .POST(BodyPublishers.noBody())
+            .build();
+        
+        return this.client.sendAsync(request, BodyHandlers.discarding());
+    }
+
+    /**
+     * Posts a message to a specific channel with the given text
+     * 
+     * @param channel the channel you want to post to.
+     * @param text the text you want in the message.
+     * @return the HttpResponse of the request.
+     */
+    public CompletableFuture<HttpResponse<Void>> postMessage(String channel, String text) {
+        Objects.requireNonNull(channel);
+        Objects.requireNonNull(text);
+
+        var request = HttpRequest.newBuilder()
+            .uri(URI.create(String.format(
+                this.url + POST_MESSAGE_FORMAT_STRING,
+                channel,
+                text,
+                token
             )))
             .header(Headers.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED)
             .POST(BodyPublishers.noBody())
