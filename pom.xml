@@ -9,7 +9,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven.compiler.parameters>true</maven.compiler.parameters>
     <surefire-plugin.version>2.22.0</surefire-plugin.version>
-    <quarkus.version>1.0.1.Final</quarkus.version>
+    <quarkus.version>1.1.0.Final</quarkus.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>11</maven.compiler.source>
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
@@ -19,7 +19,7 @@
     <dependencies>
       <dependency>
         <groupId>io.quarkus</groupId>
-        <artifactId>quarkus-universe-bom</artifactId>
+        <artifactId>quarkus-bom</artifactId>
         <version>${quarkus.version}</version>
         <type>pom</type>
         <scope>import</scope>
