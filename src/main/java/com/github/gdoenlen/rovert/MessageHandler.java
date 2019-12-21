@@ -15,12 +15,12 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /**
  * Event handler for the the slack "message" type of event.
- * 
+ *
  * @see https://api.slack.com/events/message.channels
  */
 @ApplicationScoped
 public class MessageHandler implements EventHandler {
-    
+
     private final SlackWebApiService slack;
     private final String react;
     private final String userId;
@@ -29,7 +29,7 @@ public class MessageHandler implements EventHandler {
     private final AtomicBoolean sendMessage = new AtomicBoolean(true);
 
     /**
-     * @param slack the slack api 
+     * @param slack the slack api
      * @param react the emoji to react to the message with
      * @param userId the user to react to
      * @param delay how often the user should be reacted to in minutes.
@@ -53,7 +53,7 @@ public class MessageHandler implements EventHandler {
         this.userId = userId;
         this.delay = delay;
     }
-    
+
     @Override
     public String getEventType() {
         return "message.channels";
@@ -62,7 +62,7 @@ public class MessageHandler implements EventHandler {
     /**
      * Handlers the incoming event.
      * It will react to only the user specified and if not in a cooldown period
-     * 
+     *
      * @param event the incoming event from slack
      * @return always noContent (204)
      */
@@ -74,17 +74,17 @@ public class MessageHandler implements EventHandler {
         String timestamp = inner.getEventTimestamp();
         String user = inner.getUser();
         String channel = inner.getChannel();
-        
-        if (userId.equals(user) && sendMessage.compareAndSet(true, false)) {
+
+        if (this.userId.equals(user) && this.sendMessage.compareAndSet(true, false)) {
             this.slack.addReaction(channel, this.react, timestamp);
 
             if (this.delay > 0) {
-                this.scheduler.schedule(() -> sendMessage.set(true), this.delay, TimeUnit.MINUTES);
+                this.scheduler.schedule(() -> this.sendMessage.set(true), this.delay, TimeUnit.MINUTES);
             } else {
-                sendMessage.set(true);
+                this.sendMessage.set(true);
             }
         }
-        
+
         return Response.noContent().build();
     }
 }
